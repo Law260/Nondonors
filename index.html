@@ -12,7 +12,26 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Missing 50</title>
+<title>The Missing 50 &mdash; why half of UK adults don&rsquo;t give to charity</title>
+<meta name="description" content="An interactive, evidence-based simulation of UK non-donors. Meet 50 people, explore the barriers that stop them giving, and play intervention cards drawn from published research.">
+<meta name="author" content="Steve Law">
+<meta name="theme-color" content="#0f1117">
+<meta name="color-scheme" content="dark">
+
+<!-- Social sharing. TODO: once the final domain is live, set og:url, the
+     canonical link and og:image to absolute URLs on that domain, and switch
+     twitter:card to summary_large_image. Link previews on LinkedIn/X will stay
+     text-only until og:image points at a real 1200x630 image. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Missing 50">
+<meta property="og:title" content="The Missing 50 &mdash; why half of UK adults don&rsquo;t give to charity">
+<meta property="og:description" content="Meet 50 non-donors, explore what actually stops them giving, and test evidence-based interventions. Built for fundraisers, free to use in workshops.">
+<meta property="og:locale" content="en_GB">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="The Missing 50">
+<meta name="twitter:description" content="An interactive, evidence-based simulation of UK non-donor psychology.">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f1117'/%3E%3Ctext x='32' y='44' font-family='system-ui,sans-serif' font-size='30' font-weight='700' fill='%234f8ef7' text-anchor='middle'%3E50%3C/text%3E%3C/svg%3E">
 <style>
 :root{
   --c-bg:#0f1117;--c-bg2:#1a1d27;--c-bg3:#242736;--c-bg4:#2e3245;--c-border:#3a3f5c;
@@ -31,6 +50,23 @@ html,body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:v
 ::-webkit-scrollbar-track{background:var(--c-bg)}
 ::-webkit-scrollbar-thumb{background:var(--c-bg4);border-radius:3px}
 a{color:var(--c-brand);text-decoration:none}
+
+/* ── Accessibility: keyboard focus ──────────────────────────────────────────
+   Nothing in this file previously styled :focus, so keyboard users had no way
+   to tell where they were. :focus-visible keeps mouse clicks visually clean. */
+:focus-visible{outline:3px solid var(--c-brand2);outline-offset:2px;border-radius:var(--radius-sm)}
+.avatar:focus-visible{outline-offset:3px;z-index:6}
+
+/* ── Accessibility: reduced motion ──────────────────────────────────────────
+   This page is animation-heavy (drifting avatars, card deals, flashes). Honour
+   the OS-level "reduce motion" setting. No JS logic depends on animation
+   events, so collapsing durations is safe. */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms!important;animation-iteration-count:1!important;
+    transition-duration:.01ms!important;scroll-behavior:auto!important
+  }
+}
 .phase-screen{position:fixed;inset:0;display:flex;flex-direction:column;background:var(--c-bg);transition:opacity .35s ease;overflow:hidden}
 .phase-screen.hidden{opacity:0;pointer-events:none;z-index:-1}
 .btn-primary{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.75rem;background:var(--c-brand);color:#fff;border:none;border-radius:var(--radius-lg);font-size:.95rem;font-weight:700;cursor:pointer;transition:var(--trans)}
@@ -107,7 +143,7 @@ a{color:var(--c-brand);text-decoration:none}
 .p1-src-filter.active,.p1-src-filter:hover{background:rgba(79,142,247,.12);border-color:rgba(79,142,247,.4);color:var(--c-brand)}
 /* Source item cards */
 .p1-src-list{display:flex;flex-direction:column;gap:.45rem}
-.p1-src-item{border:1px solid var(--c-border);border-radius:var(--radius);padding:.6rem .875rem;display:flex;flex-direction:column;gap:.22rem;transition:border-color .15s,background .15s}
+.p1-src-item{border:1px solid var(--c-border);border-radius:var(--radius-md);padding:.6rem .875rem;display:flex;flex-direction:column;gap:.22rem;transition:border-color .15s,background .15s}
 .p1-src-item:hover{border-color:rgba(79,142,247,.4);background:rgba(79,142,247,.03)}
 .p1-src-row1{display:flex;align-items:baseline;gap:.45rem}
 .p1-src-badge{font-size:.5rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;padding:.1rem .35rem;border-radius:3px;flex-shrink:0;white-space:nowrap;line-height:1.6}
@@ -471,6 +507,16 @@ a{color:var(--c-brand);text-decoration:none}
 </head>
 <body>
 
+<noscript>
+  <div style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:2rem;background:#0f1117;color:#e8eaf0;text-align:center;font-family:system-ui,sans-serif">
+    <div style="max-width:32rem">
+      <h1 style="font-size:1.5rem;margin-bottom:.75rem">The Missing 50</h1>
+      <p style="color:#9ba3c0;line-height:1.6">This is an interactive simulation and needs JavaScript to run. Please enable JavaScript and reload the page.</p>
+      <p style="color:#6b7494;line-height:1.6;margin-top:1rem;font-size:.9rem">In short: around half of UK adults gave nothing to charity in the last year. This tool turns that statistic into 50 individual people, shows the barriers behind their decisions, and lets you test interventions drawn from published research.</p>
+    </div>
+  </div>
+</noscript>
+
 <!-- PHASE 0 -->
 <div id="phase0" class="phase-screen">
   <!-- Intro slide sequence -->
@@ -490,14 +536,14 @@ a{color:var(--c-brand);text-decoration:none}
     </div>
   </div>
   <!-- Info modal -->
-  <div id="p0-info-modal" class="p0-modal" style="display:none">
+  <div id="p0-info-modal" class="p0-modal" role="dialog" aria-modal="true" aria-label="About this tool" style="display:none">
     <div class="p0-modal-inner">
       <button id="p0-modal-close" class="pp-close">&times;</button>
       <div class="author-card" style="border:none;padding:0">
         <div class="author-avatar"><img src="data:image/jpeg;base64,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" onerror="this.parentNode.textContent='SL'" alt="Steve Law" style="width:100%;height:100%;object-fit:cover"></div>
         <div class="author-info">
           <div class="author-name">Steve Law</div>
-          <div class="author-msg">Fundraising strategist and charity sector nerd. This tool is based on evidence from 52 sources. Use it freely in workshops &mdash; I hope it sparks good conversations.</div>
+          <div class="author-msg">Fundraising strategist and charity sector nerd. This tool is based on evidence from <span class="js-count-sources">43</span> sources. Use it freely in workshops &mdash; I hope it sparks good conversations.</div>
           <div class="author-links">
             <a href="https://buymeacoffee.com/stevelaw" target="_blank" class="btn-bmac">&#9749; Buy me a coffee</a>
             <a href="https://www.linkedin.com/in/stevejohnlaw/" target="_blank" class="btn-linkedin">&#128188; LinkedIn</a>
@@ -521,7 +567,7 @@ a{color:var(--c-brand);text-decoration:none}
       <p>Explore why 50 of these 100 people don&rsquo;t give to charity</p>
     </div>
     <div class="p1-header-btns">
-      <button class="p1-sources-btn" id="p1-sources-btn" title="View all research sources">&#128203; <span id="p1-sources-count">52</span> sources</button>
+      <button class="p1-sources-btn" id="p1-sources-btn" title="View all research sources">&#128203; <span id="p1-sources-count" class="js-count-sources">43</span> sources</button>
       <button class="p1-info-btn" id="p1-info-btn" title="About this section">&#9432;</button>
     </div>
   </div>
@@ -571,7 +617,7 @@ a{color:var(--c-brand);text-decoration:none}
 </div><!-- /.p1-inner -->
 
   <!-- Info modal -->
-  <div id="p1-info-modal" class="p0-modal" style="display:none">
+  <div id="p1-info-modal" class="p0-modal" role="dialog" aria-modal="true" aria-label="About this tool" style="display:none">
     <div class="p0-modal-inner" style="max-width:520px;max-height:80vh;overflow-y:auto">
       <button id="p1-info-modal-close" class="pp-close">&times;</button>
       <h3 style="font-size:1rem;font-weight:800;margin-bottom:.25rem">&#128269; How to use The Investigation</h3>
@@ -583,7 +629,7 @@ a{color:var(--c-brand);text-decoration:none}
       <p style="font-size:.78rem;color:var(--c-text2);line-height:1.55">The 50 non-donors fall into 7 distinct audience segments. Selecting a segment highlights those people in the grid so you can see who they are.</p>
       <div class="p1-modal-section">Barriers</div>
       <p style="font-size:.78rem;color:var(--c-text2);line-height:1.55">11 evidence-backed barriers explain what stops people giving. Each is grounded in real research. Selecting a barrier highlights the people most affected.</p>
-      <div class="ai-note">&#129302; The barrier data was synthesised by ChatGPT from 52 published reports, then reviewed and structured for this tool. Individual figures may not match primary sources exactly.</div>
+      <div class="ai-note">&#129302; The barrier data was synthesised by ChatGPT from <span class="js-count-sources">43</span> published reports, then reviewed and structured for this tool. Individual figures may not match primary sources exactly.</div>
       <div class="p1-modal-section">Severity scale</div>
       <div id="p1-info-severity"></div>
       <div class="p1-modal-section">Evidence strength</div>
@@ -591,13 +637,13 @@ a{color:var(--c-brand);text-decoration:none}
       <div class="p1-modal-section">Propensity to give</div>
       <div id="p1-info-propensity"></div>
       <div class="p1-modal-section">Data sources</div>
-      <p style="font-size:.78rem;color:var(--c-text2);line-height:1.55">This tool draws on 43 peer-reviewed studies, government statistics, and sector reports. Each barrier and intervention is linked to its sources &mdash; click any source chip to read the key finding.</p>
+      <p style="font-size:.78rem;color:var(--c-text2);line-height:1.55">This tool draws on <span class="js-count-sources">43</span> peer-reviewed studies, government statistics, and sector reports. Each barrier and intervention is linked to its sources &mdash; click any source chip to read the key finding.</p>
       <div class="ai-note">&#129302; This project was built with AI &mdash; ChatGPT researched and summarised the reports; Claude Code wrote the app. It&rsquo;s an honest exploration of what&rsquo;s possible with AI tools, not a polished product. Use the evidence as a starting point, not a definitive reference.</div>
     </div>
   </div>
 
   <!-- Sources bibliography modal -->
-  <div id="p1-sources-modal" class="p0-modal" style="display:none">
+  <div id="p1-sources-modal" class="p0-modal" role="dialog" aria-modal="true" aria-label="Research sources" style="display:none">
     <div class="p1-src-inner">
       <button id="p1-sources-close" class="pp-close">&times;</button>
       <div class="p1-src-head">
@@ -620,7 +666,7 @@ a{color:var(--c-brand);text-decoration:none}
   </div>
 
   <!-- Source detail modal -->
-  <div id="p1-source-modal" class="p0-modal" style="display:none">
+  <div id="p1-source-modal" class="p0-modal" role="dialog" aria-modal="true" aria-label="Source detail" style="display:none">
     <div class="p0-modal-inner" style="max-width:520px">
       <button id="p1-source-modal-close" class="pp-close">&times;</button>
       <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;color:var(--c-text3);font-weight:700;margin-bottom:.5rem" id="sm-publisher"></div>
@@ -724,7 +770,7 @@ a{color:var(--c-brand);text-decoration:none}
     <div class="p3-section">
       <div class="p3-cta-inline">
         <div class="p3-cta-inline-title">Did this change how you think about non-donors?</div>
-        <p class="p3-cta-inline-sub">Built on 52 peer-reviewed sources. If it shifted your thinking &mdash; or saved your team hours of research &mdash; I&rsquo;d love to stay connected. Follow for more evidence-based fundraising insights, or help keep this tool free.</p>
+        <p class="p3-cta-inline-sub">Built on <span class="js-count-sources">43</span> peer-reviewed sources. If it shifted your thinking &mdash; or saved your team hours of research &mdash; I&rsquo;d love to stay connected. Follow for more evidence-based fundraising insights, or help keep this tool free.</p>
         <div class="p3-cta-btns">
           <a href="https://www.linkedin.com/in/stevejohnlaw/" target="_blank" rel="noopener" class="btn-linkedin-lg">&#128188; Follow on LinkedIn</a>
           <a href="https://buymeacoffee.com/stevelaw" target="_blank" rel="noopener" class="btn-bmac-lg">&#9749; Buy me a coffee</a>
@@ -733,7 +779,7 @@ a{color:var(--c-brand);text-decoration:none}
     </div>
     <div class="p3-section">
       <h2 class="p3-heading">&#x1F0CF; The Full Deck</h2>
-      <p class="p3-sub">All 18 evidence-backed intervention cards &mdash; scroll to browse. Each targets a different barrier. No combination converts everyone, but the right mix can move thousands.</p>
+      <p class="p3-sub">All <span class="js-count-cards">24</span> evidence-backed intervention cards &mdash; scroll to browse. Each targets a different barrier. No combination converts everyone, but the right mix can move thousands.</p>
       <div class="p3-cards-scroll" id="p3-cards-scroll"></div>
     </div>
     <div class="p3-section" id="p3-quotes-section">
@@ -1195,6 +1241,29 @@ const CardSystem = (() => {
 /* =========================================================
    HELPERS
    ========================================================= */
+
+/* The person avatars are <div>s, so they are invisible to keyboard and screen
+   reader users unless we give them button semantics by hand. Enter/Space match
+   native button behaviour. */
+function makeActivatable(el, label, handler) {
+  el.setAttribute('role', 'button');
+  el.setAttribute('tabindex', '0');
+  if (label) el.setAttribute('aria-label', label);
+  el.addEventListener('click', handler);
+  el.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+      e.preventDefault();
+      handler(e);
+    }
+  });
+}
+
+/* Describe a person for assistive tech without leaking the whole persona. */
+function personLabel(person, suffix) {
+  const seg = (DATA.segments.find(x => x.id === person.segment_id) || {}).name;
+  return [person.name || 'Person', seg, suffix].filter(Boolean).join(', ');
+}
+
 function sevLabel(eff) {
   if (eff >= 4.5) return {text:'Overwhelming', cls:'sev-5'};
   if (eff >= 3.5) return {text:'Strong',       cls:'sev-4'};
@@ -1420,6 +1489,13 @@ const Phase0 = (() => {
 
   function startDrift() {
     if (rafId) cancelAnimationFrame(rafId);
+    // Respect "reduce motion": place the avatars once and leave them still.
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      avatars.forEach(av => {
+        av.el.style.transform = 'translate(' + (av.homeX - 21) + 'px,' + (av.homeY - 21) + 'px)';
+      });
+      return;
+    }
     rafId = requestAnimationFrame(tick);
     const screen = document.getElementById('p0-grid-screen');
     screen.onmousemove = e => { mouseX = e.clientX; mouseY = e.clientY; };
@@ -1640,7 +1716,11 @@ const Phase1 = (() => {
       av.title = person.name || '';
       const bg = getAvatarColor(person, currentOverlay);
       if (!person.isDonor && !person.isActivated) av.style.background = bg;
-      if (!person.isDonor) av.addEventListener('click', () => onPersonClick(person));
+      if (person.isDonor) {
+        av.setAttribute('aria-label', personLabel(person, 'already donates'));
+      } else {
+        makeActivatable(av, personLabel(person, 'non-donor, view details'), () => onPersonClick(person));
+      }
       grid.appendChild(av);
     });
     buildLegend(currentOverlay, state.population, document.getElementById('p1-legend'));
@@ -2396,7 +2476,9 @@ const Phase2 = (() => {
         }
         av.style.transition = 'background .9s ease, border-color .9s ease';
         av.style.cursor = 'pointer';
-        av.onclick = () => showPersonaModal(person);
+        makeActivatable(av, personLabel(person, 'view details'), () => showPersonaModal(person));
+      } else {
+        av.setAttribute('aria-label', personLabel(person, 'converted'));
       }
       grid.appendChild(av);
     });
@@ -2972,6 +3054,8 @@ const Phase3 = (() => {
       av.className = 'avatar ' + (person.isDonor ? 'is-donor' : (person.isActivated ? 'is-activated' : 'is-nondonor'));
       av.textContent = person.emoji || (person.isDonor ? '\u{1F7E2}' : '\u{1F534}');
       av.style.cursor = 'default';
+      av.setAttribute('aria-label', personLabel(person,
+        person.isDonor ? 'already donated' : (person.isActivated ? 'converted' : 'still not giving')));
       grid.appendChild(av);
     });
   }
@@ -3301,7 +3385,23 @@ function showPhase(n) {
   if (n === 3) Phase3.show();
 }
 
+/* Escape closes whichever dialog is on top. Previously the only way out of a
+   modal was clicking the backdrop or the small close button. */
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape' && e.key !== 'Esc') return;
+  // Dynamically created overlays (persona cards, tour) sit last in the DOM.
+  const dynamic = [...document.querySelectorAll('.p2-persona-overlay')].pop();
+  if (dynamic) { dynamic.remove(); return; }
+  const open = [...document.querySelectorAll('.p0-modal')]
+    .filter(m => getComputedStyle(m).display !== 'none').pop();
+  if (open) open.style.display = 'none';
+});
+
 /* Boot */
+// Keep every "N sources" / "N cards" claim in the copy in sync with the data,
+// so the counts can never drift from DATA again.
+document.querySelectorAll('.js-count-sources').forEach(el => { el.textContent = DATA.sources.length; });
+document.querySelectorAll('.js-count-cards').forEach(el => { el.textContent = DATA.cards.length; });
 showPhase(0);
 
 </script>
