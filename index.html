@@ -1,14 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-VKGLTCQ5FS"></script>
+<!-- Analytics (Google tag). Loaded ONLY when this page is the top-level
+     document. When it is embedded in an iframe - e.g. purposekit.org/missing-50 -
+     the host page's own analytics already covers the visit, and loading a second
+     vendor inside the frame would set cookies the host's privacy policy does not
+     declare. Phase changes are reported to the host via postMessage instead
+     (see EMBED_HOST at the bottom of the script). -->
 <script>
+(function () {
+  var embedded;
+  try { embedded = window.self !== window.top; } catch (e) { embedded = true; }
+  if (embedded) { window.gtag = window.gtag || function () {}; return; }
+  var ID = 'G-VKGLTCQ5FS';
   window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-VKGLTCQ5FS');
+  window.gtag = function () { window.dataLayer.push(arguments); };
+  window.gtag('js', new Date());
+  window.gtag('config', ID);
+  var s = document.createElement('script');
+  s.async = true;
+  s.src = 'https://www.googletagmanager.com/gtag/js?id=' + ID;
+  document.head.appendChild(s);
+})();
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -3372,7 +3385,25 @@ const Phase3 = (() => {
 /* =========================================================
    ROUTER — switch between phases
    ========================================================= */
+/* When embedded, tell the host page which phase we are on. The host decides
+   what to do with it (PurposeKit forwards it to PostHog). No-op standalone. */
+const EMBED_HOST = (() => {
+  let embedded;
+  try { embedded = window.self !== window.top; } catch (e) { embedded = true; }
+  return {
+    send(event, detail) {
+      if (!embedded) return;
+      try {
+        window.parent.postMessage({ source: 'missing-50', event, ...detail }, '*');
+      } catch (e) { /* host may be cross-origin and refuse; nothing to do */ }
+    }
+  };
+})();
+
+const PHASE_NAMES = ['hook', 'investigation', 'play', 'outcomes'];
+
 function showPhase(n) {
+  EMBED_HOST.send('phase', { phase: n, name: PHASE_NAMES[n] || String(n) });
   if (n !== 0) Phase0.stopDrift();
   ['phase0','phase1','phase2','phase3'].forEach((id, i) => {
     const el = document.getElementById(id);
